@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wait for it... 👑</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
+        .font-script {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* --- COUNTDOWN STYLES --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .digit-box {
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px;
+            padding: 10px;
+            min-width: 60px;
+        }
+
+        /* --- REEL STYLES (Previously used) --- */
+        .progress-bar-container {
+            position: absolute; top: 10px; left: 0; width: 100%; display: flex; gap: 4px; padding: 0 8px; z-index: 50;
+        }
+        .progress-bar-bg {
+            height: 3px; background: rgba(255, 255, 255, 0.3); flex: 1; border-radius: 2px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%; background: #fff; width: 0%;
+        }
+        
+        .ken-burns { animation: kenBurns 20s infinite alternate; }
+        @keyframes kenBurns { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+        
+        .btn-pulse { animation: pulse-gold 2s infinite; }
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+        }
+
+        /* Transition effects */
+        .fade-out { opacity: 0; pointer-events: none; transition: opacity 1s ease; }
+        .hidden-view { display: none; }
+    </style>
+</head>
+<body class="h-screen w-screen bg-black text-white relative">
+
+    <!-- AUDIO PLAYER -->
+    <audio id="bgMusic" loop>
+        <!-- Paste your full https link here -->
+        <source src="https://files.catbox.moe/YOUR_GENERATED_CODE.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- ========================================= -->
+    <!-- VIEW 1: THE LOCK SCREEN (COUNTDOWN)       -->
+    <!-- ========================================= -->
+    <div id="lock-screen" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[url('https://images.unsplash.com/photo-1511044568932-338cba0fb803?q=80&w=800&auto=format&fit=crop')] bg-cover bg-center">
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black/70"></div>
+
+        <div class="relative z-10 text-center px-6 animate-fade-in-up">
+            <h1 class="text-4xl md:text-5xl font-script text-yellow-400 mb-2">Not Yet, Baby...</h1>
+            <p class="text-white/80 mb-8 text-sm uppercase tracking-widest">The surprise unlocks in</p>
+
+            <!-- Countdown Timer -->
+            <div class="glass-panel p-6 rounded-2xl flex gap-4 justify-center mb-10">
+                <div class="text-center">
+                    <div class="digit-box text-2xl font-bold text-white" id="d-days">00</div>
+                    <div class="text-[10px] uppercase mt-1 text-gray-400">Days</div>
+                </div>
+                <div class="text-center">
+                    <div class="digit-box text-2xl font-bold text-white" id="d-hours">00</div>
+                    <div class="text-[10px] uppercase mt-1 text-gray-400">Hrs</div>
+                </div>
+                <div class="text-center">
+                    <div class="digit-box text-2xl font-bold text-white" id="d-mins">00</div>
+                    <div class="text-[10px] uppercase mt-1 text-gray-400">Mins</div>
+                </div>
+                <div class="text-center">
+                    <div class="digit-box text-2xl font-bold text-white" id="d-secs">00</div>
+                    <div class="text-[10px] uppercase mt-1 text-gray-400">Secs</div>
+                </div>
+            </div>
+
+            <p class="text-xs text-white/50 max-w-xs mx-auto">
+                This page is magically sealed until <br> <span class="text-yellow-400 font-bold">Jan 1st, 2026 @ 12:00 AM</span>
+            </p>
+        </div>
+
+        <!-- Secret Test Button (Fixed to Bottom Right of Screen) -->
+        <button onclick="unlockSurprise()" class="fixed bottom-5 right-5 text-white/30 hover:text-white z-[110] text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer">
+            🔓 Test Unlock
+        </button>
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- VIEW 2: THE REEL (HIDDEN INITIALLY)       -->
+    <!-- ========================================= -->
+    <div id="reel-view" class="h-full w-full md:max-w-md md:mx-auto relative bg-gray-900 overflow-hidden hidden-view opacity-0 transition-opacity duration-1000">
+        
+        <!-- Progress Bars -->
+        <div class="progress-bar-container" id="progressContainer"></div>
+
+        <!-- Music Control -->
+        <button id="musicToggle" class="absolute top-6 right-4 z-[60] text-white/80 hover:text-white animate-pulse">
+            <span class="text-xs font-bold mr-1">🎵 TAP FOR MUSIC</span>
+        </button>
+
+        <!-- Slides Wrapper -->
+        <div id="slides-wrapper" class="h-full w-full relative"></div>
+
+        <!-- Tap Zones -->
+        <div class="absolute inset-0 z-30 flex">
+            <div class="w-1/3 h-full" onclick="prevSlide()"></div>
+            <div class="w-2/3 h-full" onclick="nextSlide()"></div>
+        </div>
+
+        <!-- Hearts -->
+        <div id="hearts-container" class="absolute inset-0 overflow-hidden pointer-events-none z-20"></div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- CONFIGURATION ---
+        // TARGET DATE: Month is 0-indexed (0 = Jan). So (2026, 0, 1) is Jan 1st 2026.
+        const targetDate = new Date(2026, 0, 1, 0, 0, 0).getTime(); 
+
+        const slides = [
+            {
+                image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?q=80&w=800&auto=format&fit=crop", 
+                title: "To My Baby,", subtitle: "Finally...", position: "center", duration: 4000
+            },
+            {
+                image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=800&auto=format&fit=crop", 
+                title: "It's 2026!", subtitle: "Another year of you ruling my heart.", position: "bottom", duration: 5000
+            },
+            {
+                image: "https://images.unsplash.com/photo-1519052537078-e6302a4968ef?q=80&w=800&auto=format&fit=crop", 
+                title: "My Wish:", subtitle: "More naps, more treats, more us.", position: "bottom", duration: 5000
+            },
+            {
+                image: "https://images.unsplash.com/photo-1495360019602-e001be63a752?q=80&w=800&auto=format&fit=crop", 
+                title: "Happy New Year!", subtitle: "I love you. ❤️", position: "center", isFinal: true, duration: 8000
+            }
+        ];
+
+        // --- COUNTDOWN LOGIC ---
+        const lockScreen = document.getElementById('lock-screen');
+        const reelView = document.getElementById('reel-view');
+        const audio = document.getElementById('bgMusic');
+        let timerInterval;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                // Time is reached!
+                unlockSurprise();
+                return;
+            }
+
+            // Calculations
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Update DOM
+            document.getElementById('d-days').innerText = String(days).padStart(2, '0');
+            document.getElementById('d-hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('d-mins').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('d-secs').innerText = String(seconds).padStart(2, '0');
+        }
+
+        // Start Countdown
+        timerInterval = setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+
+        // --- UNLOCK & REEL LOGIC ---
+        function unlockSurprise() {
+            clearInterval(timerInterval);
+            
+            // Fade out lock screen
+            lockScreen.classList.add('fade-out');
+            
+            // Show reel view
+            reelView.classList.remove('hidden-view');
+            // Small delay to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                reelView.classList.remove('opacity-0');
+                initReel(); // Start the reel logic
+                
+                // Try to auto-play audio (might be blocked by browser)
+                audio.play().catch(e => {
+                    console.log("Autoplay blocked, user must tap");
+                });
+            }, 500);
+
+            setTimeout(() => {
+                lockScreen.style.display = 'none';
+            }, 1000);
+        }
+
+        // --- MUSIC CONTROL ---
+        document.getElementById('musicToggle').addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                document.getElementById('musicToggle').innerHTML = '<span>🔊 SOUND ON</span>';
+                document.getElementById('musicToggle').classList.remove('animate-pulse');
+            } else {
+                audio.pause();
+                document.getElementById('musicToggle').innerHTML = '<span>🔇 SOUND OFF</span>';
+            }
+        });
+
+        // --- SLIDESHOW LOGIC (Same as before) ---
+        let currentIndex = 0;
+        let progressInterval;
+        let startTime;
+
+        function initReel() {
+            const slidesWrapper = document.getElementById('slides-wrapper');
+            const progressContainer = document.getElementById('progressContainer');
+
+            // Build UI
+            slides.forEach((slide, idx) => {
+                // Progress Bar
+                const barBg = document.createElement('div');
+                barBg.className = 'progress-bar-bg';
+                const barFill = document.createElement('div');
+                barFill.className = 'progress-bar-fill';
+                barFill.id = `progress-${idx}`;
+                barBg.appendChild(barFill);
+                progressContainer.appendChild(barBg);
+
+                // Slide Element
+                const slideEl = document.createElement('div');
+                slideEl.className = `absolute inset-0 w-full h-full transition-opacity duration-500 ease-in-out ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`;
+                slideEl.id = `slide-${idx}`;
+
+                let gradientClass = slide.position === 'center' ? 'bg-black/40' : 'bg-gradient-to-t from-black/80 via-transparent to-transparent';
+                let textPosition = slide.position === 'center' ? 'items-center justify-center text-center' : 'items-start justify-end pb-24 px-6';
+
+                slideEl.innerHTML = `
+                    <img src="${slide.image}" class="absolute inset-0 w-full h-full object-cover ken-burns">
+                    <div class="absolute inset-0 ${gradientClass}"></div>
+                    <div class="absolute inset-0 flex flex-col ${textPosition} z-20">
+                        <h1 class="font-script text-5xl text-yellow-400 mb-2 drop-shadow-lg">${slide.title}</h1>
+                        <p class="text-xl font-semibold text-white drop-shadow-md">${slide.subtitle}</p>
+                         ${slide.isFinal ? `<div class="mt-8"><button onclick="spawnHearts()" class="bg-white text-black px-8 py-3 rounded-full font-bold btn-pulse hover:bg-yellow-400 z-50 relative pointer-events-auto">Accept Love 💖</button></div>` : ''}
+                    </div>
+                `;
+                slidesWrapper.appendChild(slideEl);
+            });
+
+            startSlide(0);
+        }
+
+        function startSlide(index) {
+            clearInterval(progressInterval);
+            
+            // Visual Toggle
+            document.querySelectorAll('[id^="slide-"]').forEach((el, idx) => {
+                if(idx === index) {
+                    el.classList.remove('opacity-0', 'z-0'); el.classList.add('opacity-100', 'z-10');
+                } else {
+                    el.classList.remove('opacity-100', 'z-10'); el.classList.add('opacity-0', 'z-0');
+                }
+            });
+
+            // Bars
+            for(let i=0; i<index; i++) document.getElementById(`progress-${i}`).style.width = '100%';
+            for(let i=index+1; i<slides.length; i++) document.getElementById(`progress-${i}`).style.width = '0%';
+
+            currentIndex = index;
+            startTime = Date.now();
+            const duration = slides[index].duration;
+            const bar = document.getElementById(`progress-${index}`);
+
+            progressInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const percent = Math.min((elapsed / duration) * 100, 100);
+                bar.style.width = `${percent}%`;
+                if(elapsed >= duration) nextSlide();
+            }, 10);
+        }
+
+        function nextSlide() {
+            if(currentIndex < slides.length - 1) startSlide(currentIndex + 1);
+            else {
+                clearInterval(progressInterval);
+                document.getElementById(`progress-${currentIndex}`).style.width = '100%';
+            }
+        }
+
+        function prevSlide() {
+            if(currentIndex > 0) startSlide(currentIndex - 1);
+            else startSlide(0);
+        }
+
+        function spawnHearts() {
+            const container = document.getElementById('hearts-container');
+            for(let i=0; i<30; i++) {
+                setTimeout(() => {
+                    const h = document.createElement('div');
+                    h.innerHTML = ['❤️','💖','✨'][Math.floor(Math.random()*3)];
+                    h.style.position = 'absolute';
+                    h.style.left = Math.random()*100 + '%';
+                    h.style.bottom = '0';
+                    h.style.fontSize = '2rem';
+                    h.style.animation = `floatUp ${3+Math.random()*2}s ease-in forwards`;
+                    container.appendChild(h);
+                    setTimeout(() => h.remove(), 5000);
+                }, i*100);
+            }
+        }
+
+        // Add float animation dynamically
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes floatUp {
+                0% { transform: translateY(0) scale(0.5); opacity: 0; }
+                20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+                100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+    </script>
+</body>
+</html>
