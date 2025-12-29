@@ -33,7 +33,7 @@
             min-width: 60px;
         }
 
-        /* --- REEL STYLES (Previously used) --- */
+        /* --- REEL STYLES --- */
         .progress-bar-container {
             position: absolute; top: 10px; left: 0; width: 100%; display: flex; gap: 4px; padding: 0 8px; z-index: 50;
         }
@@ -53,6 +53,22 @@
             70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
         }
 
+        /* --- LOVE RAIN ANIMATION (PAGE 3) --- */
+        .love-particle {
+            position: absolute;
+            bottom: -50px;
+            font-size: 24px;
+            animation: floatUpSlow 4s linear infinite;
+            z-index: 25; /* Above background, below text */
+            opacity: 0;
+        }
+
+        @keyframes floatUpSlow {
+            0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            100% { transform: translateY(-110vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
         /* Transition effects */
         .fade-out { opacity: 0; pointer-events: none; transition: opacity 1s ease; }
         .hidden-view { display: none; }
@@ -61,21 +77,20 @@
 <body class="h-screen w-screen bg-black text-white relative">
 
     <!-- AUDIO PLAYER -->
+    <!-- Make sure song.mp3 is uploaded to your GitHub! -->
     <audio id="bgMusic" loop>
-        <!-- Paste your full https link here -->
-        <source src="https://files.catbox.moe/YOUR_GENERATED_CODE.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
+        <source src="song.mp3" type="audio/mpeg">
     </audio>
 
     <!-- ========================================= -->
     <!-- VIEW 1: THE LOCK SCREEN (COUNTDOWN)       -->
     <!-- ========================================= -->
-    <div id="lock-screen" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[url('https://images.unsplash.com/photo-1511044568932-338cba0fb803?q=80&w=800&auto=format&fit=crop')] bg-cover bg-center">
-        <!-- Dark Overlay -->
-        <div class="absolute inset-0 bg-black/70"></div>
+    <div id="lock-screen" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-gray-900 bg-cover bg-center">
+        <!-- Background Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-b from-gray-900 to-black"></div>
 
         <div class="relative z-10 text-center px-6 animate-fade-in-up">
-            <h1 class="text-4xl md:text-5xl font-script text-yellow-400 mb-2">Not Yet, Baby...</h1>
+            <h1 class="text-4xl md:text-5xl font-script text-yellow-400 mb-2">Not Yet, Rani...</h1>
             <p class="text-white/80 mb-8 text-sm uppercase tracking-widest">The surprise unlocks in</p>
 
             <!-- Countdown Timer -->
@@ -103,7 +118,7 @@
             </p>
         </div>
 
-        <!-- Secret Test Button (Fixed to Bottom Right of Screen) -->
+        <!-- Secret Test Button (Bottom Right) -->
         <button onclick="unlockSurprise()" class="fixed bottom-5 right-5 text-white/30 hover:text-white z-[110] text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer">
             🔓 Test Unlock
         </button>
@@ -132,7 +147,8 @@
             <div class="w-2/3 h-full" onclick="nextSlide()"></div>
         </div>
 
-        <!-- Hearts -->
+        <!-- Animation Containers -->
+        <div id="love-rain-container" class="absolute inset-0 overflow-hidden pointer-events-none z-20"></div>
         <div id="hearts-container" class="absolute inset-0 overflow-hidden pointer-events-none z-20"></div>
     </div>
 
@@ -140,24 +156,28 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // --- CONFIGURATION ---
-        // TARGET DATE: Month is 0-indexed (0 = Jan). So (2026, 0, 1) is Jan 1st 2026.
         const targetDate = new Date(2026, 0, 1, 0, 0, 0).getTime(); 
 
+        // UPDATED: Slide 4 is now a REAL baby kitten (Ginger Pookie)
         const slides = [
             {
+                // Slide 1: Cute White Cat
                 image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?q=80&w=800&auto=format&fit=crop", 
-                title: "To My Baby,", subtitle: "Finally...", position: "center", duration: 4000
+                title: "To My Rani,", subtitle: "Finally...", position: "center", duration: 4000
             },
             {
+                // Slide 2: Regal Cat
                 image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=800&auto=format&fit=crop", 
                 title: "It's 2026!", subtitle: "Another year of you ruling my heart.", position: "bottom", duration: 5000
             },
             {
-                image: "https://images.unsplash.com/photo-1519052537078-e6302a4968ef?q=80&w=800&auto=format&fit=crop", 
-                title: "My Wish:", subtitle: "More naps, more treats, more us.", position: "bottom", duration: 5000
+                // Slide 3: Sleepy/Cuddly Cat
+                image: "https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=800&auto=format&fit=crop", 
+                title: "My Wish:", subtitle: "Unlimited naps, treats, & US.", position: "bottom", duration: 6000
             },
             {
-                image: "https://images.unsplash.com/photo-1495360019602-e001be63a752?q=80&w=800&auto=format&fit=crop", 
+                // Slide 4: THE REAL BABY POOKIE
+                image: "https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?q=80&w=800&auto=format&fit=crop", 
                 title: "Happy New Year!", subtitle: "I love you. ❤️", position: "center", isFinal: true, duration: 8000
             }
         ];
@@ -173,54 +193,39 @@
             const distance = targetDate - now;
 
             if (distance < 0) {
-                // Time is reached!
                 unlockSurprise();
                 return;
             }
 
-            // Calculations
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Update DOM
             document.getElementById('d-days').innerText = String(days).padStart(2, '0');
             document.getElementById('d-hours').innerText = String(hours).padStart(2, '0');
             document.getElementById('d-mins').innerText = String(minutes).padStart(2, '0');
             document.getElementById('d-secs').innerText = String(seconds).padStart(2, '0');
         }
 
-        // Start Countdown
         timerInterval = setInterval(updateCountdown, 1000);
-        updateCountdown(); // Initial call
+        updateCountdown(); 
 
         // --- UNLOCK & REEL LOGIC ---
         function unlockSurprise() {
             clearInterval(timerInterval);
-            
-            // Fade out lock screen
             lockScreen.classList.add('fade-out');
-            
-            // Show reel view
             reelView.classList.remove('hidden-view');
-            // Small delay to allow display:block to apply before opacity transition
+            
             setTimeout(() => {
                 reelView.classList.remove('opacity-0');
-                initReel(); // Start the reel logic
-                
-                // Try to auto-play audio (might be blocked by browser)
-                audio.play().catch(e => {
-                    console.log("Autoplay blocked, user must tap");
-                });
+                initReel(); 
+                audio.play().catch(e => { console.log("Autoplay blocked"); });
             }, 500);
 
-            setTimeout(() => {
-                lockScreen.style.display = 'none';
-            }, 1000);
+            setTimeout(() => { lockScreen.style.display = 'none'; }, 1000);
         }
 
-        // --- MUSIC CONTROL ---
         document.getElementById('musicToggle').addEventListener('click', () => {
             if (audio.paused) {
                 audio.play();
@@ -232,18 +237,17 @@
             }
         });
 
-        // --- SLIDESHOW LOGIC (Same as before) ---
+        // --- SLIDESHOW LOGIC ---
         let currentIndex = 0;
         let progressInterval;
         let startTime;
+        let loveRainInterval;
 
         function initReel() {
             const slidesWrapper = document.getElementById('slides-wrapper');
             const progressContainer = document.getElementById('progressContainer');
 
-            // Build UI
             slides.forEach((slide, idx) => {
-                // Progress Bar
                 const barBg = document.createElement('div');
                 barBg.className = 'progress-bar-bg';
                 const barFill = document.createElement('div');
@@ -252,7 +256,6 @@
                 barBg.appendChild(barFill);
                 progressContainer.appendChild(barBg);
 
-                // Slide Element
                 const slideEl = document.createElement('div');
                 slideEl.className = `absolute inset-0 w-full h-full transition-opacity duration-500 ease-in-out ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`;
                 slideEl.id = `slide-${idx}`;
@@ -261,12 +264,12 @@
                 let textPosition = slide.position === 'center' ? 'items-center justify-center text-center' : 'items-start justify-end pb-24 px-6';
 
                 slideEl.innerHTML = `
-                    <img src="${slide.image}" class="absolute inset-0 w-full h-full object-cover ken-burns">
+                    <img src="${slide.image}" class="absolute inset-0 w-full h-full object-cover ken-burns" onerror="this.src='https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=800'">
                     <div class="absolute inset-0 ${gradientClass}"></div>
                     <div class="absolute inset-0 flex flex-col ${textPosition} z-20">
                         <h1 class="font-script text-5xl text-yellow-400 mb-2 drop-shadow-lg">${slide.title}</h1>
                         <p class="text-xl font-semibold text-white drop-shadow-md">${slide.subtitle}</p>
-                         ${slide.isFinal ? `<div class="mt-8"><button onclick="spawnHearts()" class="bg-white text-black px-8 py-3 rounded-full font-bold btn-pulse hover:bg-yellow-400 z-50 relative pointer-events-auto">Accept Love 💖</button></div>` : ''}
+                         ${slide.isFinal ? `<div class="mt-8"><button onclick="spawnExplosion()" class="bg-white text-black px-8 py-3 rounded-full font-bold btn-pulse hover:bg-yellow-400 z-50 relative pointer-events-auto">Accept Love 💖</button></div>` : ''}
                     </div>
                 `;
                 slidesWrapper.appendChild(slideEl);
@@ -278,6 +281,13 @@
         function startSlide(index) {
             clearInterval(progressInterval);
             
+            // Handle Love Rain Animation for Slide 3 (index 2)
+            if (index === 2) {
+                startLoveRain();
+            } else {
+                stopLoveRain();
+            }
+
             // Visual Toggle
             document.querySelectorAll('[id^="slide-"]').forEach((el, idx) => {
                 if(idx === index) {
@@ -309,6 +319,7 @@
             else {
                 clearInterval(progressInterval);
                 document.getElementById(`progress-${currentIndex}`).style.width = '100%';
+                stopLoveRain(); 
             }
         }
 
@@ -317,33 +328,50 @@
             else startSlide(0);
         }
 
-        function spawnHearts() {
+        // --- ANIMATIONS ---
+        
+        // 1. Love Rain (Specific for Slide 3)
+        function startLoveRain() {
+            const container = document.getElementById('love-rain-container');
+            container.innerHTML = ''; 
+            
+            loveRainInterval = setInterval(() => {
+                const p = document.createElement('div');
+                p.innerHTML = ['❤️', '✨', '💖', '🥰', '🍬'][Math.floor(Math.random() * 5)];
+                p.className = 'love-particle';
+                p.style.left = Math.random() * 100 + '%';
+                const size = Math.random() * 1.5 + 0.5; 
+                p.style.transform = `scale(${size})`;
+                p.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                container.appendChild(p);
+                setTimeout(() => { p.remove(); }, 5000);
+            }, 300); 
+        }
+
+        function stopLoveRain() {
+            clearInterval(loveRainInterval);
+            const container = document.getElementById('love-rain-container');
+            container.innerHTML = '';
+        }
+
+        // 2. Final Explosion (Specific for Last Slide)
+        function spawnExplosion() {
             const container = document.getElementById('hearts-container');
-            for(let i=0; i<30; i++) {
+            for(let i=0; i<50; i++) {
                 setTimeout(() => {
                     const h = document.createElement('div');
-                    h.innerHTML = ['❤️','💖','✨'][Math.floor(Math.random()*3)];
+                    h.innerHTML = ['❤️','💖','✨','💍'][Math.floor(Math.random()*4)];
                     h.style.position = 'absolute';
                     h.style.left = Math.random()*100 + '%';
                     h.style.bottom = '0';
-                    h.style.fontSize = '2rem';
-                    h.style.animation = `floatUp ${3+Math.random()*2}s ease-in forwards`;
+                    h.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    h.style.animation = `floatUpSlow ${3+Math.random()*2}s ease-in forwards`;
+                    h.style.zIndex = '100';
                     container.appendChild(h);
                     setTimeout(() => h.remove(), 5000);
-                }, i*100);
+                }, i*50);
             }
         }
-
-        // Add float animation dynamically
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes floatUp {
-                0% { transform: translateY(0) scale(0.5); opacity: 0; }
-                20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
-                100% { transform: translateY(-100vh) scale(1); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
 
     </script>
 </body>
