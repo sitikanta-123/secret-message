@@ -77,7 +77,6 @@
 <body class="h-screen w-screen bg-black text-white relative">
 
     <!-- AUDIO PLAYER -->
-    <!-- Make sure song.mp3 is uploaded to your GitHub! -->
     <audio id="bgMusic" loop>
         <source src="song.mp3" type="audio/mpeg">
     </audio>
@@ -85,36 +84,36 @@
     <!-- ========================================= -->
     <!-- VIEW 1: THE LOCK SCREEN (COUNTDOWN)       -->
     <!-- ========================================= -->
-    <div id="lock-screen" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-gray-900 bg-cover bg-center">
-        <!-- Background Gradient -->
-        <div class="absolute inset-0 bg-gradient-to-b from-gray-900 to-black"></div>
+    <div id="lock-screen" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-pink-100 bg-cover bg-center" style="background-image: url('https://i.pinimg.com/1200x/9b/4d/1b/9b4d1b336e7f595d0e1b7ef189057239.jpg');">
+        <!-- Background Gradient Overlay -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
         <div class="relative z-10 text-center px-6 animate-fade-in-up">
-            <h1 class="text-4xl md:text-5xl font-script text-yellow-400 mb-2">Not Yet, Baby...</h1>
-            <p class="text-white/80 mb-8 text-sm uppercase tracking-widest">The surprise unlocks in</p>
+            <h1 class="text-4xl md:text-5xl font-script text-pink-300 mb-2 drop-shadow-lg">Not Yet, Baby...</h1>
+            <p class="text-white/90 mb-8 text-sm uppercase tracking-widest font-bold">The surprise unlocks in</p>
 
             <!-- Countdown Timer -->
             <div class="glass-panel p-6 rounded-2xl flex gap-4 justify-center mb-10">
                 <div class="text-center">
                     <div class="digit-box text-2xl font-bold text-white" id="d-days">00</div>
-                    <div class="text-[10px] uppercase mt-1 text-gray-400">Days</div>
+                    <div class="text-[10px] uppercase mt-1 text-gray-300">Days</div>
                 </div>
                 <div class="text-center">
                     <div class="digit-box text-2xl font-bold text-white" id="d-hours">00</div>
-                    <div class="text-[10px] uppercase mt-1 text-gray-400">Hrs</div>
+                    <div class="text-[10px] uppercase mt-1 text-gray-300">Hrs</div>
                 </div>
                 <div class="text-center">
                     <div class="digit-box text-2xl font-bold text-white" id="d-mins">00</div>
-                    <div class="text-[10px] uppercase mt-1 text-gray-400">Mins</div>
+                    <div class="text-[10px] uppercase mt-1 text-gray-300">Mins</div>
                 </div>
                 <div class="text-center">
                     <div class="digit-box text-2xl font-bold text-white" id="d-secs">00</div>
-                    <div class="text-[10px] uppercase mt-1 text-gray-400">Secs</div>
+                    <div class="text-[10px] uppercase mt-1 text-gray-300">Secs</div>
                 </div>
             </div>
 
-            <p class="text-xs text-white/50 max-w-xs mx-auto">
-                This page is magically sealed until <br> <span class="text-yellow-400 font-bold">Jan 1st, 2026 @ 12:00 AM</span>
+            <p class="text-xs text-white/70 max-w-xs mx-auto font-bold">
+                This page is locked until <br> <span class="text-pink-300 font-extrabold text-sm">Jan 1st, 2026 @ 12:00 AM</span>
             </p>
         </div>
 
@@ -156,28 +155,27 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // --- CONFIGURATION ---
-        const targetDate = new Date(2026, 0, 1, 0, 0, 0).getTime(); 
+        const targetDate = new Date(2026,0,1,0,0 ,0).getTime(); 
 
-        // UPDATED: Slide 4 is now a REAL baby kitten (Ginger Pookie)
         const slides = [
             {
-                // Slide 1: Cute White Cat
-                image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?q=80&w=800&auto=format&fit=crop", 
-                title: "To My Baby,", subtitle: "Finally...", position: "center", duration: 4000
+                // Slide 1: Bubu Dudu Hugging/Love
+                image: "https://i.pinimg.com/1200x/9b/4d/1b/9b4d1b336e7f595d0e1b7ef189057239.jpg", 
+                title: "To My Baby,", subtitle: "My favorite person...", position: "center", duration: 4000
             },
             {
-                // Slide 2: Regal Cat
-                image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=800&auto=format&fit=crop", 
-                title: "It's 2026!", subtitle: "Another year of you ruling my heart.", position: "bottom", duration: 5000
+                // Slide 2: Bubu Dudu Cute/Together
+                image: "https://i.pinimg.com/736x/f8/01/38/f80138733e45a24bae01f46be18ddb21.jpg", 
+                title: "It's 2026!", subtitle: "Another year of US together.", position: "bottom", duration: 5000
             },
             {
-                // Slide 3: Sleepy/Cuddly Cat
-                image: "https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=800&auto=format&fit=crop", 
-                title: "My Wish:", subtitle: "Unlimited naps, treats, & US.", position: "bottom", duration: 6000
+                // Slide 3: Bubu Dudu Sleeping/Cozy (Perfect for the 'Wish' slide)
+                image: "https://i.pinimg.com/736x/87/06/52/8706520068dbdc6d73f142e68236e48f.jpg", 
+                title: "My Wish:", subtitle: "Unlimited naps, treats, & hugs.", position: "bottom", duration: 6000
             },
             {
-                // Slide 4: THE REAL BABY POOKIE
-                image: "https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?q=80&w=800&auto=format&fit=crop", 
+                // Slide 4: Bubu Dudu Celebration/Love (Finale)
+                image: "https://i.pinimg.com/736x/12/5d/d8/125dd892c795529c8083b4a9226e84c6.jpg", 
                 title: "Happy New Year!", subtitle: "I love you. ❤️", position: "center", isFinal: true, duration: 8000
             }
         ];
@@ -263,13 +261,14 @@
                 let gradientClass = slide.position === 'center' ? 'bg-black/40' : 'bg-gradient-to-t from-black/80 via-transparent to-transparent';
                 let textPosition = slide.position === 'center' ? 'items-center justify-center text-center' : 'items-start justify-end pb-24 px-6';
 
+                // UPDATED: Button is now absolutely positioned at the bottom to clear faces
                 slideEl.innerHTML = `
-                    <img src="${slide.image}" class="absolute inset-0 w-full h-full object-cover ken-burns" onerror="this.src='https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=800'">
+                    <img src="${slide.image}" class="absolute inset-0 w-full h-full object-cover ken-burns">
                     <div class="absolute inset-0 ${gradientClass}"></div>
                     <div class="absolute inset-0 flex flex-col ${textPosition} z-20">
-                        <h1 class="font-script text-5xl text-yellow-400 mb-2 drop-shadow-lg">${slide.title}</h1>
+                        <h1 class="font-script text-5xl text-pink-300 mb-2 drop-shadow-lg">${slide.title}</h1>
                         <p class="text-xl font-semibold text-white drop-shadow-md">${slide.subtitle}</p>
-                         ${slide.isFinal ? `<div class="mt-8"><button onclick="spawnExplosion()" class="bg-white text-black px-8 py-3 rounded-full font-bold btn-pulse hover:bg-yellow-400 z-50 relative pointer-events-auto">Accept Love 💖</button></div>` : ''}
+                         ${slide.isFinal ? `<div class="absolute bottom-20 left-0 w-full flex justify-center z-50"><button onclick="spawnExplosion()" class="bg-white text-black px-8 py-3 rounded-full font-bold btn-pulse hover:bg-pink-300 shadow-xl border-2 border-pink-200 pointer-events-auto transform hover:scale-105 transition-transform">Accept Love 💖</button></div>` : ''}
                     </div>
                 `;
                 slidesWrapper.appendChild(slideEl);
@@ -336,8 +335,9 @@
             container.innerHTML = ''; 
             
             loveRainInterval = setInterval(() => {
+                // Customized emojis for Bubu Dudu theme
                 const p = document.createElement('div');
-                p.innerHTML = ['❤️', '✨', '💖', '🥰', '🍬'][Math.floor(Math.random() * 5)];
+                p.innerHTML = ['❤️', '✨', '💖', '🐼', '🐻'][Math.floor(Math.random() * 5)];
                 p.className = 'love-particle';
                 p.style.left = Math.random() * 100 + '%';
                 const size = Math.random() * 1.5 + 0.5; 
@@ -360,7 +360,7 @@
             for(let i=0; i<50; i++) {
                 setTimeout(() => {
                     const h = document.createElement('div');
-                    h.innerHTML = ['❤️','💖','✨','💍'][Math.floor(Math.random()*4)];
+                    h.innerHTML = ['❤️','💖','✨','💍','🐼','🐻'][Math.floor(Math.random()*6)];
                     h.style.position = 'absolute';
                     h.style.left = Math.random()*100 + '%';
                     h.style.bottom = '0';
