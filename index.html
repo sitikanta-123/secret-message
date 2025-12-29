@@ -157,31 +157,30 @@
         // --- CONFIGURATION ---
         const targetDate = new Date(2026, 0, 1, 0, 0, 0).getTime(); 
 
-        // UPDATED: SLOWER DURATIONS
         const slides = [
             {
                 // Slide 1: Bubu Dudu Hugging/Love
                 image: "https://i.pinimg.com/1200x/9b/4d/1b/9b4d1b336e7f595d0e1b7ef189057239.jpg", 
                 title: "To My Baby,", subtitle: "My favorite person...", position: "center", 
-                duration: 6000 // Slower (6s)
+                duration: 6000 
             },
             {
                 // Slide 2: Bubu Dudu Cute/Together
                 image: "https://i.pinimg.com/736x/f8/01/38/f80138733e45a24bae01f46be18ddb21.jpg", 
                 title: "It's 2026!", subtitle: "Another year of US together.", position: "bottom", 
-                duration: 7000 // Slower (7s)
+                duration: 7000 
             },
             {
                 // Slide 3: Bubu Dudu Sleeping/Cozy (Perfect for the 'Wish' slide)
                 image: "https://i.pinimg.com/736x/87/06/52/8706520068dbdc6d73f142e68236e48f.jpg", 
                 title: "My Wish:", subtitle: "Unlimited naps, treats, & hugs.", position: "bottom", 
-                duration: 8000 // Slower (8s)
+                duration: 8000 
             },
             {
                 // Slide 4: Bubu Dudu Celebration/Love (Finale)
                 image: "https://i.pinimg.com/736x/12/5d/d8/125dd892c795529c8083b4a9226e84c6.jpg", 
                 title: "Happy New Year!", subtitle: "I love you. ❤️", position: "center", isFinal: true, 
-                duration: 12000 // Much Slower (12s)
+                duration: 12000 
             }
         ];
 
@@ -266,14 +265,14 @@
                 let gradientClass = slide.position === 'center' ? 'bg-black/40' : 'bg-gradient-to-t from-black/80 via-transparent to-transparent';
                 let textPosition = slide.position === 'center' ? 'items-center justify-center text-center' : 'items-start justify-end pb-24 px-6';
 
-                // Button is positioned absolute bottom-20 to clear faces
+                // UPDATED: Button is now at bottom-32 (was bottom-20)
                 slideEl.innerHTML = `
                     <img src="${slide.image}" class="absolute inset-0 w-full h-full object-cover ken-burns">
                     <div class="absolute inset-0 ${gradientClass}"></div>
                     <div class="absolute inset-0 flex flex-col ${textPosition} z-20">
                         <h1 class="font-script text-5xl text-pink-300 mb-2 drop-shadow-lg">${slide.title}</h1>
                         <p class="text-xl font-semibold text-white drop-shadow-md">${slide.subtitle}</p>
-                         ${slide.isFinal ? `<div class="absolute bottom-20 left-0 w-full flex justify-center z-50"><button onclick="spawnExplosion()" class="bg-white text-black px-8 py-3 rounded-full font-bold btn-pulse hover:bg-pink-300 shadow-xl border-2 border-pink-200 pointer-events-auto transform hover:scale-105 transition-transform">Accept Love 💖</button></div>` : ''}
+                         ${slide.isFinal ? `<div class="absolute bottom-32 left-0 w-full flex justify-center z-50"><button onclick="spawnExplosion()" class="bg-white text-black px-8 py-3 rounded-full font-bold btn-pulse hover:bg-pink-300 shadow-xl border-2 border-pink-200 pointer-events-auto transform hover:scale-105 transition-transform">Accept Love 💖</button></div>` : ''}
                     </div>
                 `;
                 slidesWrapper.appendChild(slideEl);
